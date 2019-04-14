@@ -1,5 +1,5 @@
 """Main function platform, all scripts should be called from here."""
 
-from Scripts.file_name_dictionary import data_indexer
+from Scripts.file_indexer import file_indexer
 
-data_indexer()
+file_indexer()
