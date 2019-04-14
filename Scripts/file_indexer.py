@@ -10,31 +10,43 @@ def file_indexer():
     """Create and index of filenames and markets from files in 'Data'."""
     path = os.getcwd()+'\\Data'
     index_list = []
+    errors = []
     itera = 1
 
     for file in os.listdir(path):
-        with bz2.open(path+"\\"+file, 'r') as f:
-            data = f.read().decode('utf-8')
-        dict_list = [d.strip() for d in data.splitlines()]
-        data = [json.loads(i) for i in dict_list]
+        try:
+            with bz2.open(path+"\\"+file, 'r') as f:
+                data = f.read().decode('utf-8')
+            dict_list = [d.strip() for d in data.splitlines()]
+            data = [json.loads(i) for i in dict_list]
 
-        id = data[-1]['mc'][0]['id']
-        eventId = data[-1]['mc'][0]['marketDefinition']['eventId']
-        eventName = data[-1]['mc'][0]['marketDefinition']['eventName']
-        countryCode = data[-1]['mc'][0]['marketDefinition']['countryCode']
+            id = data[-1]['mc'][0]['id']
+            eventId = data[-1]['mc'][0]['marketDefinition']['eventId']
+            eventName = data[-1]['mc'][0]['marketDefinition']['eventName']
+            countryCode = data[-1]['mc'][0]['marketDefinition']['countryCode']
 
-        marketType = data[-1]['mc'][0]['marketDefinition']['marketType']
-        name = data[-1]['mc'][0]['marketDefinition']['name']
+            marketType = data[-1]['mc'][0]['marketDefinition']['marketType']
+            name = data[-1]['mc'][0]['marketDefinition']['name']
 
-        openDate = data[-1]['mc'][0]['marketDefinition']['openDate']
-        marketTime = data[-1]['mc'][0]['marketDefinition']['marketTime']
-        settledTime = data[-1]['mc'][0]['marketDefinition']['settledTime']
+            openDate = data[-1]['mc'][0]['marketDefinition']['openDate']
+            marketTime = data[-1]['mc'][0]['marketDefinition']['marketTime']
+            settledTime = data[-1]['mc'][0]['marketDefinition']['settledTime']
 
-        index_list.append([id, eventId, eventName, countryCode,
-                           marketType, name,
-                           openDate, marketTime, settledTime])
-        print(round((itera/len(os.listdir(path)))*100, 1), "%")
-        itera += 1
+            index_list.append([id, eventId, eventName, countryCode,
+                               marketType, name,
+                               openDate, marketTime, settledTime])
+            print(round((itera/len(os.listdir(path)))*100, 2), "%")
+            itera += 1
+
+        except Exception as err:
+            errors.append([file, err])
+            print("An error has occured in filename: ", file)
+            print(err)
+            itera += 1
+            pass
+
+    with open("0_errors.txt", "w") as output:
+        output.write(str(errors))
 
     columns = ['Filename', 'Event ID', 'Game', 'Country Code', 'Market',
                'Market Name', 'Open Date', 'Market Time', 'Settlement Time']
