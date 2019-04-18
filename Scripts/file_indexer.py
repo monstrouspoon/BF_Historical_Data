@@ -7,57 +7,6 @@ import os
 import sys
 
 
-def file_indexer():
-    """Create and index of filenames and markets from files in 'Data'."""
-    path = os.getcwd()+'\\Data'
-    index_list = []
-    errors = []
-    itera = 1
-
-    for file in os.listdir(path):
-        try:
-            with bz2.open(path+"\\"+file, 'r') as f:
-                data = f.read().decode('utf-8')
-            dict_list = [d.strip() for d in data.splitlines()]
-            data = [json.loads(i) for i in dict_list]
-
-            id = data[-1]['mc'][0]['id']
-            eventId = data[-1]['mc'][0]['marketDefinition']['eventId']
-            eventName = data[-1]['mc'][0]['marketDefinition']['eventName']
-            countryCode = data[-1]['mc'][0]['marketDefinition']['countryCode']
-
-            marketType = data[-1]['mc'][0]['marketDefinition']['marketType']
-            name = data[-1]['mc'][0]['marketDefinition']['name']
-
-            openDate = data[-1]['mc'][0]['marketDefinition']['openDate']
-            marketTime = data[-1]['mc'][0]['marketDefinition']['marketTime']
-            settledTime = data[-1]['mc'][0]['marketDefinition']['settledTime']
-
-            index_list.append([id, eventId, eventName, countryCode,
-                               marketType, name,
-                               openDate, marketTime, settledTime])
-            print(round((itera/len(os.listdir(path)))*100, 2), "%")
-            itera += 1
-            print(file)
-
-        except Exception as err:
-            errors.append([file, err])
-            print("An error has occured in filename: ", file)
-            print(err)
-            itera += 1
-            print(file)
-            pass
-
-    with open("0_errors.txt", "w") as output:
-        output.write(str(errors))
-
-    columns = ['Filename', 'Event ID', 'Game', 'Country Code', 'Market',
-               'Market Name', 'Open Date', 'Market Time', 'Settlement Time']
-
-    index_df = pd.DataFrame(index_list, columns=columns)
-    index_df.to_csv('Output\\File_index.csv', index=False)
-
-
 def file_list(folder, chunk_size):
     """Create and index of filenames and markets from files in 'Data'."""
     output_exists = os.path.isfile('Output\\output.csv')
@@ -119,7 +68,7 @@ def file_list(folder, chunk_size):
 
     temp_df = pd.DataFrame(index_list)
     with open('Output\\output.csv', 'a', newline='') as f:
-        temp_df.to_csv(f, header=False, index=False)
+        temp_df.to_csv(f, header2=False, index=False)
 
     df = pd.read_csv('Output\\output.csv', index_col=None, names=columns)
     df.to_csv('Output\\output.csv', index=False)
