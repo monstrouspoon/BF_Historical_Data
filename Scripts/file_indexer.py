@@ -33,7 +33,6 @@ def file_list(folder, chunk_size):
         dict_list = [d.strip() for d in data.splitlines()]
         data = [json.loads(i) for i in dict_list]
 
-        id = data[-1]['mc'][0]['id']
         eventId = data[-1]['mc'][0]['marketDefinition']['eventId']
         eventName = data[-1]['mc'][0]['marketDefinition']['eventName']
         countryCode = data[-1]['mc'][0]['marketDefinition']['countryCode']
@@ -45,8 +44,7 @@ def file_list(folder, chunk_size):
         settledTime = data[-1]['mc'][0]['marketDefinition']['settledTime']
 
         if i % chunk_size == 0 and i > 0:
-            # print(file)
-            index_list.append([id, eventId, eventName, countryCode,
+            index_list.append([file, eventId, eventName, countryCode,
                                marketType, name,
                                marketTime, settledTime])
 
@@ -62,13 +60,13 @@ def file_list(folder, chunk_size):
 
         else:
             # print(file)
-            index_list.append([id, eventId, eventName, countryCode,
+            index_list.append([file, eventId, eventName, countryCode,
                                marketType, name,
                                marketTime, settledTime])
 
     temp_df = pd.DataFrame(index_list)
     with open('Output\\output.csv', 'a', newline='') as f:
-        temp_df.to_csv(f, header2=False, index=False)
+        temp_df.to_csv(f, header=False, index=False)
 
     df = pd.read_csv('Output\\output.csv', index_col=None, names=columns)
     df.to_csv('Output\\output.csv', index=False)
